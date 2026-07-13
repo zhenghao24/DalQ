@@ -66,10 +66,10 @@ double compute_recall(const std::vector<int>& results,
 int main(int argc, char** argv) {
     if (argc < 4) {
         std::cerr << "Usage: " << argv[0] 
-                  << " <index_file> <query_fvecs> <groundtruth_ivecs> [nprobe_min] [nprobe_max] [num_threads]" 
+                  << " <index_file> <query_fvecs> <groundtruth_ivecs> [output_file]" 
                   << std::endl;
         std::cerr << "Example: " << argv[0] 
-                  << " dataset1.index dataset1_query.fvecs dataset1_groundtruth.ivecs 1 128 8" 
+                  << " dataset1.index dataset1_query.fvecs dataset1_groundtruth.ivecs dataset1_results.csv" 
                   << std::endl;
         return 1;
     }
@@ -77,8 +77,7 @@ int main(int argc, char** argv) {
     std::string index_file = argv[1];
     std::string query_file = argv[2];
     std::string groundtruth_file = argv[3];
-
-    std::string output_file = (argc > 7) ? argv[7] : "results.csv";
+    std::string output_file = (argc > 4) ? argv[4] : "results.csv";
     CSVWriter csv_writer(output_file);
     if (!csv_writer.isOpen()) {
         std::cerr << "Failed to create output file!" << std::endl;
@@ -86,20 +85,8 @@ int main(int argc, char** argv) {
     }
     csv_writer.writeHeader();
     
-    std::vector<int> nprobe_values;
-    if (argc >= 6) {
-        int nprobe_min = std::atoi(argv[4]);
-        int nprobe_max = std::atoi(argv[5]);
-        
-        for (int n = nprobe_min; n <= nprobe_max; n *= 2) {
-            nprobe_values.push_back(n);
-        }
-        if (nprobe_values.back() < nprobe_max) {
-            nprobe_values.push_back(nprobe_max);
-        }
-    } else {
-        nprobe_values = {1, 2, 3, 5, 8, 10, 15, 20, 30, 40, 50, 60, 80, 100, 150, 200, 300, 400, 500, 600, 700, 800, 1000, 1200, 1400, 1600};
-    }
+    std::vector<int> nprobe_values = {1, 2, 3, 5, 8, 10, 15, 20, 30, 40, 50, 60, 80, 100, 150, 200, 300, 400, 500, 600, 700, 800, 1000, 1200, 1400, 1600};
+    
     
     std::cout << "========================================" << std::endl;
     std::cout << "IVF-DALQ QPS Test" << std::endl;

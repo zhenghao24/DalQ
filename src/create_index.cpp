@@ -16,11 +16,8 @@
 /**
  * IVF-DALQ Index
  * 
- * 输入文件:
- * - dataset_centroids.fvecs: 预计算的簇中心 (num_clusters个向量)
- * - dataset_cluster_id.ivecs: 每个向量的簇分配 (num_base个整数)
  * 
- * 文件格式 (.index):
+ * Index file format (.index):
  * - Header:
  *   - dimension (int32)
  *   - num_base_vectors (int32)

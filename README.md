@@ -12,53 +12,87 @@ This is the source code of the method proposed in paper: "DalQ: Reconciling Accu
 
 
 ## Compilation
-```
+```bash
 sh build.sh
 ```
 
 ## Usage
-### Create Index 
+Data files use the standard [fvecs/ivecs format](http://corpus-texmex.irisa.fr/) (`.fvecs` for float vectors, `.ivecs` for integer vectors).
+
+### Create Index
 
 ```bash
 ./build/create_index \
-  "$BASE_FILE" \
-  "$CENTROIDS_FILE" \
-  "$CLUSTER_ID_FILE" \
-  "$INDEX_FILE" \
-  "$QUANTIZATION_BITS" \
-  "$CLIP_FACTOR"
+  <base_fvecs> \
+  <centroids_fvecs> \
+  <cluster_id_ivecs> \
+  <output_index> \
+  <quantization_bits> \
+  [clip_factor]
+```
+
+**Example:**
+
+```bash
+./build/create_index \
+  dataset1_base.fvecs \
+  dataset_centroids.fvecs \
+  dataset_cluster_id.ivecs \
+  dataset1.index \
+  8 \
+  0.95
 ```
 
 #### Parameter Description:
-* **BASE_FILE**: The path to the original base vector data file.
-* **CENTROIDS_FILE**: The path to the cluster centroids data file.
-* **CLUSTER_ID_FILE**: The path to the file containing the cluster IDs corresponding to the vectors.
-* **INDEX_FILE**: The path where the output index file will be saved after construction.
-* **QUANTIZATION_BITS**: The number of quantization bits (e.g., 4 or 8).
-* **CLIP_FACTOR**: The clip factor.
+* **base_fvecs**: The path to the original base vector data file.
+* **centroids_fvecs**: The path to the cluster centroids data file.
+* **cluster_id_ivecs**: The path to the file containing the cluster IDs corresponding to the vectors.
+* **output_index**: The path where the output index file will be saved after construction.
+* **quantization_bits**: The number of quantization bits (e.g., 4 or 8).
+* **clip_factor**: The clip factor β ∈ (0, 1] that controls how tightly the quantization range is narrowed (default: 1.0).
 
 
 
 ### Test Mean Squared Error (MSE)
 
 ```bash
-./build/test_mse "$INDEX_FILE" "$BASE_FILE"
+./build/test_mse <index_file> <base_fvecs>
+```
+
+**Example:**
+
+```bash
+./build/test_mse dataset1.index dataset1_base.fvecs
 ```
 
 #### Parameter Description:
-* **INDEX_FILE**: The path to the index file.
-* **BASE_FILE**: The path to the original base vector data file.
+* **index_file**: The path to the index file.
+* **base_fvecs**: The path to the original base vector data file.
 
 
 
 ### Test ANN Performance
 
 ```bash
-./build/test_qps "$INDEX_FILE" "$QUERY_VECTORS" "$GROUNDTRUTH"
+./build/test_qps \
+  <index_file> \
+  <query_fvecs> \
+  <groundtruth_ivecs> \
+  [output_file]
+```
+
+**Example:**
+
+```bash
+./build/test_qps \
+  dataset1.index \
+  dataset1_query.fvecs \
+  dataset1_groundtruth.ivecs \
+  dataset1_results.csv
 ```
 
 #### Parameter Description:
-* **INDEX_FILE**: The path to the index file.
-* **QUERY_VECTORS**: The path to the query vector data file used for testing.
-* **GROUNDTRUTH**: The path to the ground truth file.
-
+* **index_file**: The path to the index file.
+* **query_fvecs**: The path to the query vector data file used for testing.
+* **groundtruth_ivecs**: The path to the ground truth file.
+* **output_file**: The path to the output CSV file (default: `results.csv`).
