@@ -248,7 +248,6 @@ void DALQ::quantize(const float* vector, uint8_t* codes,
     __m512 lower_vec = _mm512_set1_ps(clipped_lower);
     __m512 upper_vec = _mm512_set1_ps(clipped_upper);
     __m512 scale_vec = _mm512_set1_ps(quant_scale);
-    __m512 half_vec = _mm512_set1_ps(0.5f);
     __m512i zero_vec = _mm512_setzero_si512();
     __m512i max_code_vec = _mm512_set1_epi32(num_levels_ - 1);
     
@@ -258,7 +257,7 @@ void DALQ::quantize(const float* vector, uint8_t* codes,
     
         val = _mm512_max_ps(lower_vec, _mm512_min_ps(val, upper_vec));
         __m512 normalized = _mm512_mul_ps(_mm512_sub_ps(val, lower_vec), scale_vec);
-        __m512i code_i32 = _mm512_cvtps_epi32(_mm512_add_ps(normalized, half_vec));
+        __m512i code_i32 = _mm512_cvtps_epi32(normalized);
         code_i32 = _mm512_max_epi32(zero_vec, _mm512_min_epi32(code_i32, max_code_vec));
         __m128i code_u8 = _mm512_cvtusepi32_epi8(code_i32);
         _mm_storeu_si128(reinterpret_cast<__m128i*>(codes + i), code_u8);
